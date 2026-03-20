@@ -1,4 +1,5 @@
-import {Component} from "react";
+import React, { useState } from 'react';
+import {Component} from 'react';
 
 export class Folder extends Component{
     static LastId = 0;
@@ -24,20 +25,28 @@ export class Folder extends Component{
     }
 
     render() {
-        return <div className="folder">
-                <h1>{this.title}</h1>
-                <div className="tasks">
-                    {this.tasks.map((task, index) => (
-                        <div key={index} className="task">
-                            <h2>{task.title}</h2>
-                            <p>{task.description}</p>
-                            <p>Created on: {task.date_creation ? task.date_creation.toLocaleDateString() : 'N/A'}</p>
-                            <p>Due by: {task.date_echeance ? task.date_echeance.toLocaleDateString() : 'N/A'}</p>
-                            <p>Status: {task.etat}</p>
-                            <p>Team members: {(task.equipiers || []).map(e => (e && e.name) || e).join(', ')}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>;
+        return <FolderView model={this} />;
     }
+}
+
+function FolderView({ model }) {
+    const [expanded, setExpanded] = useState(false);
+
+    return (
+        <div className={`folder bubble ${expanded ? 'expanded' : ''}`}>
+             <div className="folder-header" onClick={() => setExpanded(!expanded)}>
+                <span className="arrow">{expanded ? '▼' : '▶'}</span>
+                <h1>{model.title}</h1>
+                <span className="count-badge">{model.tasks.length} tasks</span>
+            </div>
+            {expanded && (
+                <div className="folder-content">
+                    <p className="description">{model.description}</p>
+                    <div className="tasks-list">
+                        {model.tasks.map(task => React.cloneElement(task.render(), {key: task.id}))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 }

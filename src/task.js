@@ -1,5 +1,6 @@
 import {ETATS} from "./etats";
 import {Component} from "react";
+import React, { useState } from 'react';
 export class Task extends Component{
     static lastId = 0;
 
@@ -42,17 +43,37 @@ export class Task extends Component{
     }
 
     render() {
-        const due = this.date_echeance ? this.date_echeance.toLocaleDateString() : 'N/A';
-        const created = this.date_creation ? this.date_creation.toLocaleDateString() : 'N/A';
-        const equipiersDisplay = (this.equipiers || []).map(e => (e && typeof e === 'object' ? (e.name || '') : e)).filter(Boolean).join(', ') || '—';
-
-        return <article className="task">
-                <h2>{this.title}</h2>
-                <p>{this.description}</p>
-                <p>Created on: {created}</p>
-                <p>Due by: {due}</p>
-                <p>Status: {this.etat}</p>
-                <p>Team members: {equipiersDisplay}</p>
-            </article>;
+        return <TaskView model={this} />;
     }
+}
+
+function TaskView({ model }) {
+    const [expanded, setExpanded] = useState(false);
+
+    const due = model.date_echeance ? model.date_echeance.toLocaleDateString() : 'N/A';
+    const created = model.date_creation ? model.date_creation.toLocaleDateString() : 'N/A';
+    const equipiersDisplay = (model.equipiers || []).map(e => (e && typeof e === 'object' ? (e.name || '') : e)).filter(Boolean).join(', ') || '—';
+
+    return (
+        <article className={`task bubble ${expanded ? 'expanded' : ''}`}>
+            <div className="task-header" onClick={() => setExpanded(!expanded)}>
+                <span className="arrow">{expanded ? '▼' : '▶'}</span>
+                <h2>{model.title}</h2>
+                <span className={`status-badge ${
+                    model.etat === ETATS.REUSSI ? 'completed' :
+                    model.etat === ETATS.ABANDONNE ? 'gave-up' : ''
+                }`}>{model.etat}</span>
+            </div>
+            {expanded && (
+                <div className="task-details">
+                    <p className="description">{model.description || 'No description'}</p>
+                    <div className="meta-info">
+                        <p><strong>Created:</strong> {created}</p>
+                        <p><strong>Due:</strong> {due}</p>
+                        <p><strong>Team:</strong> {equipiersDisplay}</p>
+                    </div>
+                </div>
+            )}
+        </article>
+    );
 }

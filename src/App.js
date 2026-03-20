@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import {Task} from './task';
@@ -22,7 +22,6 @@ function JSONToTask() {
         // Important: override the auto-generated ID with the one from JSON to allow linking
         if (taskData.id) {
             task.id = taskData.id;
-            // update static counter to avoid collisions with new tasks
             Task.lastId = Math.max(Task.lastId, task.id);
         }
         tasks.push(task);
@@ -87,7 +86,8 @@ function JSONtoFolderHTML() {
 }
 
 function App() {
-  return (
+    const [showTasks, setShowTasks] = useState(true);
+    return (
       <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
@@ -102,15 +102,16 @@ function App() {
             <button>Trier</button>
             <button>Filtre</button>
         </nav>
-        <section>
+        <section style={{display: showTasks ? 'block' : 'none'}}>
             <JSONToTaskHTML/>
-            <br/>
+        </section>
+        <section style={{display: showTasks ? 'none' : 'block'}}>
             <JSONtoFolderHTML/>
         </section>
       </main>
       <footer className="App-footer">
-        <button>Taches</button>
-        <button>Dossiers</button>
+        <button onClick={() => setShowTasks(true)}>Taches</button>
+        <button onClick={() => setShowTasks(false)}>Dossiers</button>
       </footer>
       </div>
   );
