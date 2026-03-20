@@ -1,7 +1,3 @@
-.App {
-  text-align: center;
-}
-
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -35,4 +31,50 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Styles for the burger menu */
+.Menu-Burger {
+  width: 36px;
+  height: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.Menu-Burger:focus {
+  outline: none;
+}
+
+.Menu-Burger:focus-visible {
+  box-shadow: 0 0 0 4px rgba(97, 218, 251, 0.18);
+  border-radius: 6px;
+}
+
+.Menu-Burger .Barre {
+  width: 100%;
+  height: 4px;
+  background: #61dafb;
+  border-radius: 4px;
+  transition:
+    transform 0.3s cubic-bezier(.2,.7,.2,1),
+    opacity 0.2s ease;
+  transform-origin: center;
+}
+
+/* Open state: animate into an X */
+.Menu-Burger.open .Barre:nth-child(1) {
+  transform: translateY(10px) rotate(45deg);
+}
+
+.Menu-Burger.open .Barre:nth-child(2) {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+
+.Menu-Burger.open .Barre:nth-child(3) {
+  transform: translateY(-10px) rotate(-45deg);
 }
