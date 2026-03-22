@@ -16,6 +16,10 @@ export class Folder extends Component{
         this.tasks.push(task);
     }
 
+    addTasks(tasks) {
+        this.tasks.push(...tasks);
+    }
+
     removeTask(task) {
         this.tasks = this.tasks.filter(t => t !== task);
     }

@@ -23,6 +23,7 @@ function TaskForm({ onSubmit, onCancel }) {
     const [description, setDescription] = useState('');
     const [date, setDate] = useState('');
     const [etat, setEtat] = useState(ETATS.NOUVEAU);
+    const [equipiers, setEquipiers] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -30,12 +31,14 @@ function TaskForm({ onSubmit, onCancel }) {
             title,
             description,
             date_echeance: date ? new Date(date) : undefined,
-            etat
+            etat,
+            equipiers
         });
         setTitle('');
         setDescription('');
         setDate('');
         setEtat(ETATS.NOUVEAU);
+        setEquipiers('');
     };
 
     return (
@@ -58,6 +61,10 @@ function TaskForm({ onSubmit, onCancel }) {
                     {Object.values(ETATS).map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
             </div>
+            <div className="form-group">
+                <label>Équipiers</label>
+                <input required value={equipiers} onChange={e => setEquipiers(e.target.value)} placeholder="Paul, Didier" />
+            </div>
             <div className="modal-actions">
                 <button type="button" className="btn-cancel" onClick={onCancel}>Annuler</button>
                 <button type="submit">Ajouter</button>
@@ -66,15 +73,26 @@ function TaskForm({ onSubmit, onCancel }) {
     );
 }
 
-function FolderForm({ onSubmit, onCancel }) {
+function FolderForm({ onSubmit, onCancel, tasks}) {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [chosenTasks, setChoosenTasks] = useState([]);
+
+    const toggleTask = (taskId) => {
+        const idStr = String(taskId);
+        if (chosenTasks.includes(idStr)) {
+            setChoosenTasks(chosenTasks.filter(id => id !== idStr));
+        } else {
+            setChoosenTasks([...chosenTasks, idStr]);
+        }
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit({ title, description });
+        onSubmit({ title, description, chosenTasks });
         setTitle('');
         setDescription('');
+        setChoosenTasks([]);
     };
 
     return (
@@ -87,9 +105,115 @@ function FolderForm({ onSubmit, onCancel }) {
                 <label>Description</label>
                 <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Description" rows={3} />
             </div>
+            <div className="form-group">
+                <label>Tâches</label>
+                <div className="tasks-scroll-container">
+                    {tasks.map(task => (
+                        <div key={task.id} className="task-checkbox-item">
+                            <input
+                                type="checkbox"
+                                id={`task-check-${task.id}`}
+                                checked={chosenTasks.includes(String(task.id))}
+                                onChange={() => toggleTask(task.id)}
+                            />
+                            <label htmlFor={`task-check-${task.id}`}>{task.title}</label>
+                        </div>
+                    ))}
+                    {tasks.length === 0 && <p className="empty-tasks-message">Aucune tâche disponible.</p>}
+                </div>
+            </div>
             <div className="modal-actions">
                 <button type="button" className="btn-cancel" onClick={onCancel}>Annuler</button>
                 <button type="submit">Ajouter</button>
+            </div>
+        </form>
+    );
+}
+
+function FilterForm({ onSubmit, onCancel, folders, initialFilter }) {
+    const [selectedFolderId, setSelectedFolderId] = useState(initialFilter?.folderId || '');
+    const [onlyInProgress, setOnlyInProgress] = useState(initialFilter?.onlyInProgress !== undefined ? initialFilter.onlyInProgress : true);
+    const [selectedEtat, setSelectedEtat] = useState(initialFilter?.etat || '');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit({
+            folderId: selectedFolderId,
+            onlyInProgress,
+            etat: selectedEtat
+        });
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <div className="form-group">
+                <label>Dossier</label>
+                <select value={selectedFolderId} onChange={e => setSelectedFolderId(e.target.value)}>
+                    <option value="">Tous les dossiers</option>
+                    {folders && folders.map(f => <option key={f.id} value={f.id}>{f.title}</option>)}
+                </select>
+            </div>
+            <div className="form-group">
+                <label className="checkbox-label">
+                    <input
+                        type="checkbox"
+                        checked={onlyInProgress}
+                        onChange={e => setOnlyInProgress(e.target.checked)}
+                        className="checkbox-input"
+                    />
+                    En cours seulement
+                </label>
+            </div>
+            {!onlyInProgress && (
+                <div className="form-group">
+                    <label>État spécifique</label>
+                    <select value={selectedEtat} onChange={e => setSelectedEtat(e.target.value)}>
+                        <option value="">Tous les états</option>
+                        {Object.values(ETATS).map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                </div>
+            )}
+            <div className="modal-actions">
+                <button type="button" className="btn-cancel" onClick={onCancel}>Annuler</button>
+                <button type="submit">Appliquer</button>
+            </div>
+        </form>
+    );
+}
+
+function SortForm({ onSubmit, onCancel, initialSort }) {
+    const [sortBy, setSortBy] = useState(initialSort?.sortBy || 'date_creation');
+    const [descending, setDescending] = useState(initialSort?.descending || false);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit({ sortBy, descending });
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <div className="form-group">
+                <label>Trier par</label>
+                <select value={sortBy} onChange={e => setSortBy(e.target.value)}>
+                    <option value="date_creation">Date de création</option>
+                    <option value="date_echeance">Date d'échéance</option>
+                    <option value="title">Nom</option>
+                </select>
+            </div>
+            <div className="form-group">
+                <label className="checkbox-label">
+                    <input
+                        type="checkbox"
+                        checked={descending}
+                        onChange={e => setDescending(e.target.checked)}
+                        className="checkbox-input"
+                    />
+                    Décroissant
+                </label>
+            </div>
+            <div className="modal-actions">
+                <button type="button" className="btn-cancel" onClick={onCancel}>Annuler</button>
+                <button type="submit">Appliquer</button>
             </div>
         </form>
     );
@@ -157,11 +281,51 @@ function JSONtoFolder() {
     return folders;
 }
 
-function JSONToTaskHTML({ tasks }) {
+function JSONToTaskHTML({ tasks, filter, sort, folders }) {
     if (!tasks) return null;
+
+    let filteredTasks = [...tasks];
+
+    if (filter) {
+        if (filter.folderId && folders) {
+             const folder = folders.find(f => String(f.id) === String(filter.folderId));
+             if (folder) {
+                 // Match by ID since instances might differ
+                 const folderTaskIds = new Set(folder.tasks.map(t => t.id));
+                 filteredTasks = filteredTasks.filter(t => folderTaskIds.has(t.id));
+             } else {
+                 filteredTasks = [];
+             }
+        }
+
+        if (filter.onlyInProgress) {
+             filteredTasks = filteredTasks.filter(t => !ETAT_TERMINE.includes(t.etat));
+        } else if (filter.etat) {
+             filteredTasks = filteredTasks.filter(t => t.etat === filter.etat);
+        }
+    }
+
+    if (sort) {
+        filteredTasks.sort((a, b) => {
+            let res = 0;
+            if (sort.sortBy === 'title') {
+                res = a.title.localeCompare(b.title);
+            } else if (sort.sortBy === 'date_echeance') {
+                const dateA = a.date_echeance ? a.date_echeance.getTime() : 0;
+                const dateB = b.date_echeance ? b.date_echeance.getTime() : 0;
+                res = dateA - dateB;
+            } else { // date_creation
+                 const dateA = a.date_creation ? a.date_creation.getTime() : 0;
+                 const dateB = b.date_creation ? b.date_creation.getTime() : 0;
+                 res = dateA - dateB;
+            }
+            return sort.descending ? -res : res;
+        });
+    }
+
     return (
         <>
-            {tasks.map(task => React.cloneElement(task.render(), {key: task.id}))}
+            {filteredTasks.map(task => React.cloneElement(task.render(), {key: task.id}))}
         </>
     );
 }
@@ -178,12 +342,24 @@ function JSONtoFolderHTML({ folders }) {
 function App() {
     const [showTasks, setShowTasks] = useState(true);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [tasks, setTasks] = useState(JSONToTask());
-    const [folders, setFolders] = useState(JSONtoFolder());
+    const [tasks, setTasks] = useState([]);
+    const [folders, setFolders] = useState([]);
+    const [filter, setFilter] = useState({ onlyInProgress: true });
+    const [sort, setSort] = useState(null);
 
-    // Modal states
+    const [showLoadData, setShowLoadData] = useState(true);
     const [showAddTask, setShowAddTask] = useState(false);
     const [showAddFolder, setShowAddFolder] = useState(false);
+    const [showFilter, setShowFilter] = useState(false);
+    const [showSort, setShowSort] = useState(false);
+
+    const handleLoadData = (load) => {
+        if (load) {
+            setTasks(JSONToTask());
+            setFolders(JSONtoFolder());
+        }
+        setShowLoadData(false);
+    };
 
     const handleAddTask = (taskData) => {
         const newTask = new Task(
@@ -191,7 +367,7 @@ function App() {
             taskData.description,
             taskData.date_echeance,
             taskData.etat,
-            []
+            taskData.equipiers.split(', ').map(e => e.trim()).filter(Boolean)
         );
         setTasks([...tasks, newTask]);
         setShowAddTask(false);
@@ -202,19 +378,48 @@ function App() {
             folderData.title,
             folderData.description
         );
+        const selectedTasks = tasks.filter(task => folderData.chosenTasks.includes(String(task.id)));
+        for (const task of selectedTasks) {
+            newFolder.addTask(task);
+        }
         setFolders([...folders, newFolder]);
         setShowAddFolder(false);
     };
 
+    const handleFilter = (filterData) => {
+        setFilter(filterData);
+        setShowFilter(false);
+    }
+
+    const handleSort = (sortData) => {
+        setSort(sortData);
+        setShowSort(false);
+    }
+
     return (
       <div className="App">
-          {/* Modals */}
+          <Modal isOpen={showLoadData} onClose={() => handleLoadData(false)} title="Données initiales">
+              <p>Voulez-vous charger les données depuis le fichier JSON ?</p>
+              <div className="modal-actions">
+                  <button className="btn-cancel" onClick={() => handleLoadData(false)}>Non</button>
+                  <button onClick={() => handleLoadData(true)}>Oui</button>
+              </div>
+          </Modal>
+
           <Modal isOpen={showAddTask} onClose={() => setShowAddTask(false)} title="Nouvelle Tâche">
-              <TaskForm onSubmit={handleAddTask} onCancel={() => setShowAddTask(false)} />
+              <TaskForm onSubmit={handleAddTask} onCancel={() => setShowAddTask(false)}/>
           </Modal>
 
           <Modal isOpen={showAddFolder} onClose={() => setShowAddFolder(false)} title="Nouveau Dossier">
-              <FolderForm onSubmit={handleAddFolder} onCancel={() => setShowAddFolder(false)} />
+              <FolderForm onSubmit={handleAddFolder} onCancel={() => setShowAddFolder(false)} tasks={tasks}/>
+          </Modal>
+
+          <Modal isOpen={showFilter} onClose={() => setShowFilter(false)} title="Filtrer Tâches">
+                <FilterForm onSubmit={handleFilter} onCancel={() => setShowFilter(false)} folders={folders} initialFilter={filter}/>
+          </Modal>
+
+          <Modal isOpen={showSort} onClose={() => setShowSort(false)} title="Trier Tâches">
+                <SortForm onSubmit={handleSort} onCancel={() => setShowSort(false)} initialSort={sort} />
           </Modal>
 
           <header className="App-header">
@@ -235,11 +440,11 @@ function App() {
           </header>
           <main>
             <nav>
-                <button>Trier</button>
-                <button>Filtre</button>
+                <button onClick={() => {setShowSort(true)}}>Trier</button>
+                <button onClick={() => {setShowFilter(true)}}>Filtre</button>
             </nav>
             <section style={{display: showTasks ? 'block' : 'none'}}>
-                <JSONToTaskHTML tasks={tasks}/>
+                <JSONToTaskHTML tasks={tasks} filter={filter} sort={sort} folders={folders}/>
             </section>
             <section style={{display: showTasks ? 'none' : 'block'}}>
                 <JSONtoFolderHTML folders={folders}/>
