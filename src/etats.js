@@ -1,9 +1,9 @@
 export const ETATS = {
     NOUVEAU: 'Nouveau',
     EN_COURS: 'En cours',
-    REUSSI: 'Reussi',
+    REUSSI: 'Réussi',
     EN_ATTENTE: 'En attente',
-    ABANDONNE: 'Abandoné',
+    ABANDONNE: 'Abandonné',
 }
 export const ETAT_TERMINE = [
     ETATS.REUSSI,

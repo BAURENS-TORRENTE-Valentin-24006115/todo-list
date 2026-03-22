@@ -6,7 +6,7 @@
       "description": "",
       "date_creation": "2026-01-01",
       "date_echeance": "2026-03-01",
-      "etat": "Reussi",
+      "etat": "Réussi",
       "equipiers": [
         {
           "name": "Paul"
@@ -19,7 +19,7 @@
       "description": "",
       "date_creation": "2026-01-02",
       "date_echeance": "2026-04-01",
-      "etat": "Abandoné",
+      "etat": "Abandonné",
       "equipiers": []
     },
     {

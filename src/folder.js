@@ -41,7 +41,7 @@ function FolderView({ model }) {
              <div className="folder-header" onClick={() => setExpanded(!expanded)}>
                 <span className="arrow">{expanded ? '▼' : '▶'}</span>
                 <h1>{model.title}</h1>
-                <span className="count-badge">{model.tasks.length} tasks</span>
+                <span className="count-badge">{model.tasks.length} tâches</span>
             </div>
             {expanded && (
                 <div className="folder-content">

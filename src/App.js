@@ -243,13 +243,13 @@ function JSONToTask() {
     return tasks;
 }
 
-function JSONtoFolder() {
+function JSONtoFolder(existingTasks) {
     const folders = [];
     const taskMap = new Map();
     const folderMap = new Map();
 
-    // Create all tasks and map them by ID
-    const tasks = JSONToTask();
+    // use existing tasks if provided, otherwise create new
+    const tasks = existingTasks || JSONToTask();
     for (const task of tasks) {
         taskMap.set(task.id, task);
     }
@@ -363,8 +363,9 @@ function App() {
 
     const handleLoadData = (load) => {
         if (load) {
-            setTasks(JSONToTask());
-            setFolders(JSONtoFolder());
+            const loadedTasks = JSONToTask();
+            setTasks(loadedTasks);
+            setFolders(JSONtoFolder(loadedTasks));
         }
         setShowLoadData(false);
     };
@@ -433,8 +434,8 @@ function App() {
           <header className="App-header">
             <img src={logo} className="App-logo" alt="logo" />
               <div className="Task-Stats">
-                  <p className="count-badge">Tache: {tasks.length}</p>
-                  <p className="count-badge">Tache Non Faite: {tasks.length - tasks.filter(t => ETAT_TERMINE.includes(t.etat)).length}</p>
+                  <p className="count-badge">Tâches : {tasks.length}</p>
+                  <p className="count-badge">À faire : {tasks.length - tasks.filter(t => ETAT_TERMINE.includes(t.etat)).length}</p>
               </div>
             <div className={`Menu-Burger ${isMenuOpen ? 'open' : ''}`} onClick={() => setIsMenuOpen(!isMenuOpen)}>
                 <div className="Barre"></div>
@@ -442,14 +443,14 @@ function App() {
                 <div className="Barre"></div>
             </div>
               <nav className={`header-nav ${isMenuOpen ? 'open' : ''}`}>
-                  <button onClick={() => {setShowTasks(true); setIsMenuOpen(false)}}>Taches</button>
+                  <button onClick={() => {setShowTasks(true); setIsMenuOpen(false)}}>Tâches</button>
                   <button onClick={() => {setShowTasks(false); setIsMenuOpen(false)}}>Dossiers</button>
               </nav>
           </header>
           <main>
             <nav>
                 <button onClick={() => {setShowSort(true)}}>Trier</button>
-                <button onClick={() => {setShowFilter(true)}}>Filtre</button>
+                <button onClick={() => {setShowFilter(true)}}>Filtrer</button>
             </nav>
             <section style={{display: showTasks ? 'block' : 'none'}}>
                 <JSONToTaskHTML tasks={tasks} filter={filter} sort={sort} folders={folders}/>
@@ -459,7 +460,7 @@ function App() {
             </section>
           </main>
           <footer className="App-footer">
-            <button onClick={() => setShowAddTask(true)}>Ajouter Tache</button>
+            <button onClick={() => setShowAddTask(true)}>Ajouter Tâche</button>
             <button onClick={() => setShowAddFolder(true)}>Ajouter Dossier</button>
           </footer>
       </div>
