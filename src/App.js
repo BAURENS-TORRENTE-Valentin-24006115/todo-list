@@ -286,9 +286,9 @@ function JSONToTaskHTML({ tasks, filter, sort, folders }) {
 
     let filteredTasks = [...tasks];
 
-    // Filter out tasks where date_echeance is more than 2 weeks in the past
+
     const twoWeeksAgo = new Date();
-    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 7);
     filteredTasks = filteredTasks.filter(t => {
         if (!t.date_echeance) return true;
         return t.date_echeance > twoWeeksAgo;
