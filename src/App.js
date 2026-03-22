@@ -286,6 +286,14 @@ function JSONToTaskHTML({ tasks, filter, sort, folders }) {
 
     let filteredTasks = [...tasks];
 
+    // Filter out tasks where date_echeance is more than 2 weeks in the past
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+    filteredTasks = filteredTasks.filter(t => {
+        if (!t.date_echeance) return true;
+        return t.date_echeance > twoWeeksAgo;
+    });
+
     if (filter) {
         if (filter.folderId && folders) {
              const folder = folders.find(f => String(f.id) === String(filter.folderId));
@@ -307,7 +315,7 @@ function JSONToTaskHTML({ tasks, filter, sort, folders }) {
 
     if (sort) {
         filteredTasks.sort((a, b) => {
-            let res = 0;
+            let res;
             if (sort.sortBy === 'title') {
                 res = a.title.localeCompare(b.title);
             } else if (sort.sortBy === 'date_echeance') {
@@ -345,7 +353,7 @@ function App() {
     const [tasks, setTasks] = useState([]);
     const [folders, setFolders] = useState([]);
     const [filter, setFilter] = useState({ onlyInProgress: true });
-    const [sort, setSort] = useState(null);
+    const [sort, setSort] = useState({sortBy: 'date_echeance', descending: true});
 
     const [showLoadData, setShowLoadData] = useState(true);
     const [showAddTask, setShowAddTask] = useState(false);
