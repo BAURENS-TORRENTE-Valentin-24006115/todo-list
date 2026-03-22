@@ -338,11 +338,11 @@ function JSONToTaskHTML({ tasks, filter, sort, folders }) {
     );
 }
 
-function JSONtoFolderHTML({ folders }) {
+function JSONtoFolderHTML({ folders, allTasks }) {
     if (!folders) return null;
     return (
         <>
-            {folders.map(folder => React.cloneElement(folder.render(), {key: folder.id}))}
+            {folders.map(folder => React.cloneElement(folder.render(allTasks), {key: folder.id}))}
         </>
     );
 }
@@ -456,7 +456,7 @@ function App() {
                 <JSONToTaskHTML tasks={tasks} filter={filter} sort={sort} folders={folders}/>
             </section>
             <section style={{display: showTasks ? 'none' : 'block'}}>
-                <JSONtoFolderHTML folders={folders}/>
+                <JSONtoFolderHTML folders={folders} allTasks={tasks}/>
             </section>
           </main>
           <footer className="App-footer">
