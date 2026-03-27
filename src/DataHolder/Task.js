@@ -1,4 +1,4 @@
-import {ETATS} from "./etats";
+import {Etats} from "./Etats";
 import {Component} from "react";
 import React, { useState } from 'react';
 
@@ -13,7 +13,7 @@ export class Task extends Component{
         this.description = description;
         this.date_creation = new Date();
         this.date_echeance = date_echeance;
-        if (!Object.values(ETATS).includes(etat)) {
+        if (!Object.values(Etats).includes(etat)) {
             throw new Error(`Invalid etat: ${etat}`);
         }
         this.etat = etat;
@@ -98,8 +98,8 @@ function TaskView({ model }) {
                     onClick={(e) => e.stopPropagation()}
                     onChange={handleStatusChange}
                     className={`status-badge ${
-                        localEtat === ETATS.REUSSI ? 'completed' :
-                        localEtat === ETATS.ABANDONNE ? 'gave-up' : ''
+                        localEtat === Etats.REUSSI ? 'completed' :
+                        localEtat === Etats.ABANDONNE ? 'gave-up' : ''
                     }`}
                     style={{
                         border: 'none',
@@ -108,7 +108,7 @@ function TaskView({ model }) {
                         textAlign: 'center'
                     }}
                 >
-                    {Object.values(ETATS).map(s => <option key={s} value={s}>{s}</option>)}
+                    {Object.values(Etats).map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
             </div>
             {expanded && (

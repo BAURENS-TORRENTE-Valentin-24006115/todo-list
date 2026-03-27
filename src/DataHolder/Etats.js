@@ -1,4 +1,4 @@
-export const ETATS = {
+export const Etats = {
     NOUVEAU: 'Nouveau',
     EN_COURS: 'En cours',
     REUSSI: 'Réussi',
@@ -6,6 +6,6 @@ export const ETATS = {
     ABANDONNE: 'Abandonné',
 }
 export const ETAT_TERMINE = [
-    ETATS.REUSSI,
-    ETATS.ABANDONNE,
+    Etats.REUSSI,
+    Etats.ABANDONNE,
 ]
