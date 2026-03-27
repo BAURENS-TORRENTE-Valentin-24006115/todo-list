@@ -188,7 +188,6 @@ button:hover {
   transform-origin: center;
 }
 
-/* Open state: animate into an X (adjusted for new height) */
 .Menu-Burger.open .Barre:nth-child(1) {
   transform: translateY(10.5px) rotate(45deg);
 }
@@ -209,14 +208,14 @@ button:hover {
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid #333;
-  position: relative; /* Ensure absolute positioned nav is relative to header */
+  position: relative;
 }
 
 /* Header Navigation (Burger Menu Content) */
 .header-nav {
   display: none;
   position: absolute;
-  top: 100%; /* Position right below the header */
+  top: 100%;
   right: 0;
   background-color: var(--bg-secondary);
   border: 1px solid #333;
@@ -361,7 +360,6 @@ button:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Specific override for checkbox inputs in this list to avoid width: 100% from .form-group input */
 .task-checkbox-item input[type="checkbox"] {
   width: auto;
   margin-right: 12px;
@@ -410,14 +408,14 @@ button:hover {
 
 /* Filter Form Checkbox Styles */
 .checkbox-label {
-  display: flex !important; /* Use !important or specific selector to ensure it overrides if needed, though block is default for label in form-group usually */
+  display: flex !important;
   align-items: center;
   cursor: pointer;
   color: var(--text-primary);
 }
 
 .checkbox-input {
-  width: auto !important; /* Override the 100% width from .form-group input */
+  width: auto !important;
   margin-right: 10px;
-  margin-bottom: 0; /* Override potential default margins */
+  margin-bottom: 0;
 }
